@@ -1,0 +1,43 @@
+---
+title: "Assignment 2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(magrittr)
+library(ggplot2)
+library(data.table)
+suppressPackageStartupMessages(library(pryr))
+dat <- fread("./data/properties_2016.csv")
+
+```
+
+# Explain why it is or why it is not a big data problem.
+
+# Why is it an analytics problem?
+
+# How many data attributes are there?
+
+As can be seen from the result of `colnames(dat)`, we know that the data set contains 58 attributes.
+
+```{r}
+colnames(dat)
+```
+# Identify the type of the 15 attributes you find most relevant in this context.
+
+
+# Determine whether the task refers to a supervised or unsupervised learning problem
+
+# Find out what the standard analysis algorithms are for this analytics problem.
+
+# Provide descriptive summaries of the sample data
+
+```{r}
+summary(dat)
+```
+
+# How are the missings distributed?
