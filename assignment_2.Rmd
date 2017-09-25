@@ -4,25 +4,29 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, comment = "")
 ```
 
-```{r, include=FALSE}
+```{r import pachages, include=FALSE}
 library(magrittr)
 library(ggplot2)
 library(data.table)
 suppressPackageStartupMessages(library(pryr))
-dat <- fread("./data/properties_2016.csv")
+```
 
+```{r import data, cache=TRUE, include=FALSE}
+dat <- fread("./data/properties_2016.csv")
 ```
 
 # Explain why it is or why it is not a big data problem.
+
+
 
 # Why is it an analytics problem?
 
 # How many data attributes are there?
 
-As can be seen from the result of `colnames(dat)`, we know that the data set contains 58 attributes.
+As can be seen from the result of `colnames(dat)`, we know that the data set contains `r ncol(dat)` attributes.
 
 ```{r}
 colnames(dat)
