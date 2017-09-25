@@ -1,6 +1,9 @@
 ---
-title: "Assignment 2"
-output: pdf_document
+title: "Assignment 2 By Team 4"
+author: "Salma Bouzid, Shun-Lung Chang, Savitha Singh"
+output: 
+    pdf_document:
+        fig_caption: false
 ---
 
 ```{r setup, include=FALSE}
@@ -18,30 +21,34 @@ suppressPackageStartupMessages(library(pryr))
 dat <- fread("./data/properties_2016.csv")
 ```
 
-# Explain why it is or why it is not a big data problem.
+# 1. Explain why it is or why it is not a big data problem.
 
+With respect to the 4Vs (Variety, Velocity, Volume and Veracity) dimentions of big data, we would say it is NOT a big data problem. First of all, the data set, unlike videos or images, is already quite strutured. Of course, the data set still has to be cleaned for further analysis and modeling. But the time spent on data cleaning of this data set could be less than that of other unstrutured data sets. Also, the data set is static rather than streaming data, and hence it could not be a big data problem in terms of velocity. Third, according to the table below, one knows that a data set that has less than 10 gigabytes memory may not be considered as a big data problem. After using `object_size(dat)` in R, one can see that the the memory size of the data set is merely `r round(object_size(dat) / 1e9, 3)` GBs, which is far less than 10 GBs. Finally, as can be seen from the [introduction page](https://www.kaggle.com/c/zillow-prize-1), the "Zestimate" is predicted by millions of machine learning models and the error of these model has been improved consistently. In addition, the other attributes, such as size or location, can gernally be measured by objective observation. As a result, we would say that the data set's veracity has reached a certain extent, and may not need to deal with high inaccurary in some big data problems.
 
+![](imgs/table1.png)
 
-# Why is it an analytics problem?
+# 2. Why is it an analytics problem?
 
-# How many data attributes are there?
+According to the definition of analytics in [wikipedia] (https://en.wikipedia.org/wiki/Analytics), analytics is to interpret and find valuable pattern in data, and often relies on statistics and computer programming. In this problem, the goal is to find the smallest *log(error)*, which is defined as *log(Zestimate) - log(SalePrice)*. To this end, one has to interpret the data through data viusalization or data transformation, and to build statistical models for predictions. And one often uses programming languages, such as R and Python, to accomplish this task more efficiently and effectively. Therefore,  finding the minimal log(error) is a analytics problem.
 
-As can be seen from the result of `colnames(dat)`, we know that the data set contains `r ncol(dat)` attributes.
+# 3. How many data attributes are there?
+
+As can be seen from the result of `colnames(dat)`, the data set contains `r ncol(dat)` attributes.
 
 ```{r}
 colnames(dat)
 ```
-# Identify the type of the 15 attributes you find most relevant in this context.
+# 4. Identify the type of the 15 attributes you find most relevant in this context
 
 
-# Determine whether the task refers to a supervised or unsupervised learning problem
+# 5. Determine whether the task refers to a supervised or unsupervised learning problem
 
-# Find out what the standard analysis algorithms are for this analytics problem.
+# 6. Find out what the standard analysis algorithms are for this analytics problem
 
-# Provide descriptive summaries of the sample data
+# 7. Provide descriptive summaries of the sample data
 
-```{r}
+```{r, include=FALSE}
 summary(dat)
 ```
 
-# How are the missings distributed?
+# 8. How are the missings distributed?
