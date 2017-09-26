@@ -7,39 +7,70 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment = "")
+knitr::opts_chunk$set(echo = TRUE, comment = "", warning = FALSE)
 ```
 
 ```{r import pachages, include=FALSE}
 library(magrittr)
 library(ggplot2)
 library(data.table)
-suppressPackageStartupMessages(library(pryr))
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(pryr)
 ```
 
 ```{r import data, cache=TRUE, include=FALSE}
-dat <- fread("./data/properties_2016.csv")
+properties <- fread("./data/properties_2016.csv")
+transaction <- fread("./data/train_2016.csv")
+joined_df <- merge(transaction, properties, all.x = TRUE)
 ```
 
 # 1. Explain why it is or why it is not a big data problem.
 
-With respect to the 4Vs (Variety, Velocity, Volume and Veracity) dimentions of big data, we would say it is NOT a big data problem. First of all, the data set, unlike videos or images, is already quite strutured. Of course, the data set still has to be cleaned for further analysis and modeling. But the time spent on data cleaning of this data set could be less than that of other unstrutured data sets. Also, the data set is static rather than streaming data, and hence it could not be a big data problem in terms of velocity. Third, according to the table below, one knows that a data set that has less than 10 gigabytes memory may not be considered as a big data problem. After using `object_size(dat)` in R, one can see that the the memory size of the data set is merely `r round(object_size(dat) / 1e9, 3)` GBs, which is far less than 10 GBs. Finally, as can be seen from the [introduction page](https://www.kaggle.com/c/zillow-prize-1), the "Zestimate" is predicted by millions of machine learning models and the error of these model has been improved consistently. In addition, the other attributes, such as size or location, can gernally be measured by objective observation. As a result, we would say that the data set's veracity has reached a certain extent, and may not need to deal with high inaccurary in some big data problems.
+With respect to the 4Vs (Variety, Velocity, Volume and Veracity) dimentions of big data, we would say it is NOT a big data problem. First of all, the data set, unlike videos or images, is already quite strutured. Of course, the data set still has to be cleaned for further analysis and modeling. But the time spent on data cleaning of this data set could be less than that of other unstrutured data sets. Also, the data set is static rather than streaming data, and hence it could not be a big data problem in terms of velocity. Third, according to the table below, one knows that a data set that has less than 10 gigabytes memory may not be considered as a big data problem. After using `object_size(properties)` in R, one can see that the the memory size of the data set is merely `r round(object_size(properties) / 1e9, 3)` GBs, which is far less than 10 GBs. Finally, as can be seen from the [introduction page](https://www.kaggle.com/c/zillow-prize-1), the "Zestimate" is predicted by millions of machine learning models and the error of these model has been improved consistently. In addition, the other attributes, such as size or location, can gernally be measured by objective observation. As a result, we would say that the data set's veracity has reached a certain extent, and may not need to deal with high inaccurary in some big data problems.
 
 ![](imgs/table1.png)
 
 # 2. Why is it an analytics problem?
 
-According to the definition of analytics in [wikipedia] (https://en.wikipedia.org/wiki/Analytics), analytics is to interpret and find valuable pattern in data, and often relies on statistics and computer programming. In this problem, the goal is to find the smallest *log(error)*, which is defined as *log(Zestimate) - log(SalePrice)*. To this end, one has to interpret the data through data viusalization or data transformation, and to build statistical models for predictions. And one often uses programming languages, such as R and Python, to accomplish this task more efficiently and effectively. Therefore,  finding the minimal log(error) is a analytics problem.
+According to the definition of analytics in [wikipedia](https://en.wikipedia.org/wiki/Analytics), analytics is to interpret and find valuable pattern in data, and often relies on statistics and computer programming. In this problem, the goal is to find the smallest *log(error)*, which is defined as *log(Zestimate) - log(SalePrice)*. To this end, one has to interpret the data through data viusalization or data transformation, and to build statistical models for predictions. And one often uses programming languages, such as R and Python, to accomplish this task more efficiently and effectively. Therefore,  finding the minimal log(error) is a analytics problem.
 
 # 3. How many data attributes are there?
 
-As can be seen from the result of `colnames(dat)`, the data set contains `r ncol(dat)` attributes.
+As can be seen from the result of `colnames(properties)`, the data set contains `r ncol(properties)` attributes.
 
 ```{r}
-colnames(dat)
+colnames(properties)
 ```
 # 4. Identify the type of the 15 attributes you find most relevant in this context
 
+Since the goal of this problem is to find minimal *log(error)*, and we assume that "relevant" means linearly correlated, we show the first 15 attributes that has  highest absolute correlation coefficients between logerror below.
+
+First, we picked those features that are numeric, and then used `Hmisc::rcorr()` to get the correlation coefficient matrix. At last we sorted the correlation coefficients between logerror decreasingly, and chose the first 15 items. The result is shown as the barplot.
+```{r, warning=FALSE}
+numeric_df <- joined_df[, sapply(joined_df, is.numeric), with = FALSE]
+
+corr_mat <- Hmisc::rcorr(as.matrix(numeric_df))
+
+top15 <- abs(corr_mat$r[2, ]) %>% 
+    sort(decreasing = TRUE) %>% 
+    .[2:16] %>% 
+    names()
+```
+
+```{r, echo=FALSE}
+top15_values <- corr_mat$r[2, top15] %>% 
+    as.data.frame()
+top15_values$features <- rownames(top15_values)
+colnames(top15_values) <- c("values", "features")
+
+top15_values %>% 
+    ggplot(aes(x = reorder(features, values), y = values)) + 
+        geom_bar(stat = "identity") +
+        coord_flip() +
+        labs(x = "Features", y = "Correlation Coefficient")
+```
 
 # 5. Determine whether the task refers to a supervised or unsupervised learning problem
 
@@ -47,8 +78,31 @@ colnames(dat)
 
 # 7. Provide descriptive summaries of the sample data
 
-```{r, include=FALSE}
-summary(dat)
+```{r, echo = FALSE, fig.height=3, fig.width=4, fig.align='center'}
+transaction %>% 
+    mutate(year_month = make_date(year = year(transactiondate), month = month(transactiondate))) %>% 
+    group_by(year_month) %>% 
+    summarise(mean_logerror = mean(logerror)) %>% 
+    ggplot(aes(x = year_month, y = mean_logerror)) +
+    geom_line() + 
+    labs(x = "Year-Month", y = "Mean Logerror")
 ```
 
+```{r, include=FALSE}
+summary(properties)
+```
+
+\newpage
+
 # 8. How are the missings distributed?
+```{r, echo=FALSE}
+properties %>% 
+    summarise_all(funs(sum(is.na(.)))) %>% 
+    gather(key = "attribute", value = "na_counts") %>% 
+    ggplot(aes(x = reorder(attribute, na_counts), y = na_counts)) +
+        geom_bar(stat = "identity") +
+        coord_flip() + 
+        theme(axis.text = element_text(size = 6)) + 
+        labs(x = "Feauture", y = "Proportion of Missing Values")
+```
+
