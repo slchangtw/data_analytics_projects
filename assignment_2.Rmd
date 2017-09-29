@@ -22,7 +22,7 @@ library(pryr)
 
 # Import data
 
-We first downloaded the data sets from [here](https://www.kaggle.com/c/zillow-prize-1/data). And then imported and stored them as R dataframes (properties and transaction for "properties_2016.csv" and "train_2016.csv" respectively). Finally the two dataframes are joined as joined_df.
+&nbsp;&nbsp;We first downloaded the data sets from [__here__](https://www.kaggle.com/c/zillow-prize-1/data), and then we imported and stored them as R dataframes (properties and transaction for "properties_2016.csv" and "train_2016.csv" respectively). In addition, the two dataframes were joined as a new dataframe, joined_df.
 
 ```{r import data, cache=TRUE, results='hide'}
 properties <- fread("./data/properties_2016.csv")
@@ -32,26 +32,30 @@ joined_df <- merge(transaction, properties, all.x = TRUE)
 
 # 1. Explain why it is or why it is not a big data problem.
 
-With respect to the 4Vs (Variety, Velocity, Volume and Veracity) dimentions of big data, we would say it is NOT a big data problem. First of all, the data set, unlike videos or images, is already quite strutured. Of course, the data set still has to be cleaned for further analysis and modeling. But the time spent on data cleaning of this data set could be less than that of other unstrutured data sets. Also, the data set is static rather than streaming data, and hence it could not be a big data problem in terms of velocity. Third, according to the table below, one knows that a data set that has less than 10 gigabytes memory may not be considered as a big data problem. After using `pryr::object_size(properties)` in R, one can see that the the memory size of the data set is merely `r round(object_size(properties) / 1e9, 3)` GBs, which is far less than 10 GBs. Finally, as can be seen from the [introduction page](https://www.kaggle.com/c/zillow-prize-1), the "Zestimate" is predicted by millions of machine learning models and the error of these model has been improved consistently. In addition, the other attributes, such as size or location, can gernally be measured by objective observation. As a result, we would say that the data set's veracity has reached a certain extent, and may not need to deal with high inaccurary in some big data problems.
+&nbsp;&nbsp;With respect to the 4Vs (Variety, Velocity, Volume and Veracity) dimentions of big data, we would say it is NOT a big data problem. First of all, the data set, unlike videos or images, is already quite strutured. Of course, the data set still has to be cleaned for further analysis. But the time spent on data cleaning of this data set could be less than that of other unstrutured data sets.   
+&nbsp;&nbsp;Moreover, the data set is static rather than streaming data, and hence it could not be a big data problem in terms of velocity. Third, according to the table below^[1]^, a data set that has less than 10 gigabytes memory may not be considered as a big data problem. After using `pryr::object_size(properties)` in R, one can see that the the memory size of the data set is merely `r round(object_size(properties) / 1e9, 3)` GBs, which is far less than 10 GBs.  
+&nbsp;&nbsp;As can be seen from the [__introduction page__](https://www.kaggle.com/c/zillow-prize-1), the "Zestimate" is predicted by millions of machine learning models and the error of these model has been improved consistently. In addition, the other attributes, such as size or location, can gernally be measured by objective observation. As a result, we would say that the data set's veracity has reached a certain extent, and may not need to deal with high inaccurary in some big data problems.
 
 ![](imgs/table1.png)
 
 # 2. Why is it an analytics problem?
 
-According to the definition of analytics in [wikipedia](https://en.wikipedia.org/wiki/Analytics), analytics is to interpret and find valuable pattern in data, and often relies on statistics and computer programming. In this problem, the goal is to find the smallest *log(error)*, which is defined as *log(Zestimate) - log(SalePrice)*. To this end, one has to interpret the data through data viusalization and data transformation, and to build statistical models for predictions. And one often uses programming languages, such as R and Python, to accomplish this task more efficiently and effectively. Therefore, finding the minimal log(error) in this problem is a analytics problem.
+&nbsp;&nbsp;According to the [__definition of analytics in wikipedia__](https://en.wikipedia.org/wiki/Analytics), analytics is to interpret and find valuable pattern in data, and often relies on statistics and computer programming.   
+&nbsp;&nbsp;In this problem, the goal is to find the smallest *log(error)*, which is defined as *log(Zestimate) - log(SalePrice)*. To this end, one has to interpret the data through data viusalization and data transformation, and to build statistical models for predictions. One often uses programming languages, such as R and Python, to accomplish this task more efficiently and effectively, Therefore, finding the minimal *log(error)* in this problem is a analytics problem.
 
 # 3. How many data attributes are there?
 
-As can be seen from the result of `colnames(joined_df)`, the whole data set contains `r ncol(joined_df)` attributes. Also, properties contains `r ncol(properties)` attributes and transaction contains `r ncol(transaction)` attributes.
+&nbsp;&nbsp;As can be seen from the result of `colnames(joined_df)`, the whole data set contains `r ncol(joined_df)` attributes. Also, properties contains `r ncol(properties)` attributes and transaction contains `r ncol(transaction)` attributes.
 
 ```{r}
 colnames(joined_df)
 ```
+
 # 4. Identify the type of the 15 attributes you find most relevant in this context
 
-Since the goal of this problem is to find minimal *log(error)*, and we assume that "relevant" means linearly correlated, we show the first 15 attributes that has  highest absolute correlation coefficients between logerror below.
+&nbsp;&nbsp;Since the goal of this problem is to find minimal *log(error)*, and we assume that "relevant" means "linearly correlated". We show the first 15 attributes that has highest absolute correlation coefficients between logerror below.  
 
-First, we picked those features that are numeric, and then used `Hmisc::rcorr()` to get the correlation coefficient matrix. At last we sorted the correlation coefficients between logerror decreasingly, and chose the first 15 items. The result is shown as the barplot.
+&nbsp;&nbsp;Firstly, we pickcd those features that are numeric, and then used `Hmisc::rcorr()` to get the correlation coefficient matrix. At last we sorted the correlation coefficients between logerror decreasingly, and chose the first 15 items. The result is shown as the barplot.
 
 ```{r, warning=FALSE}
 numeric_df <- joined_df[, sapply(joined_df, is.numeric), with = FALSE]
@@ -79,15 +83,15 @@ top15_values %>%
 
 # 5. Determine whether the task refers to a supervised or unsupervised learning problem
 
-This should be a supervised learning proplem, according to the definition of [supervised learning in wikipedia](https://en.wikipedia.org/wiki/Supervised_learning). Given that we have to predict the 'logerror' variable in this problem, so 'logerror' is the labeled or desired variable in a supervised problem. Therefore, it is a supervised learning proplem.
+&nbsp;&nbsp;This should be a supervised learning proplem, according to the [__definition of supervised learning in wikipedia__](https://en.wikipedia.org/wiki/Supervised_learning). Given that we have to predict *log(error)* variable in this problem, so *log(error)* is the labeled or desired variable in a supervised problem. Therefore, it is a supervised learning proplem.  
 
 # 6. Find out what the standard analysis algorithms are for this analytics problem
 
-In order to find the optimal logerror, a standard analysis algorithm that can be used is the regression analysis Since regression analysis is for estimation the relationship among variables, for this task, one can build regression models to find the relationship between logerror and other variables.
+&nbsp;&nbsp;In order to find the optimal logerror, a standard analysis algorithm that can be used is the regression analysis. Regression analysis is for estimation the relationship among variables. for this task, one can build regression models to find the relationship between logerror and other variables.
 
 # 7. Download the data and provide descriptive summaries of the sample data
 
-At first, we summarised transaction by ploting its trend. One can see a uprising trend of the average logerror of each month.
+&nbsp;&nbsp;We summarised transaction by ploting its trend. One can see an uprising trend of the average logerror of each month.
 
 ```{r, echo = FALSE, fig.height=3, fig.width=4, fig.align='center'}
 transaction %>% 
@@ -99,7 +103,7 @@ transaction %>%
     labs(x = "Year-Month", y = "Mean Logerror")
 ```
 
-Second, we used `summary()` in R to summarise properties. One can see a noticeable number of missing values (NAs) in many of the features, and we would carry out a deeper analysis of these missing values in the next question.
+&nbsp;&nbsp;Also, we used `summary()` in R to summarise properties. One can see a noticeable number of missing values (NAs) in many of the features, and we would carry out a deeper analysis of these missing values in the next question.
 
 ```{r}
 summary(properties)
@@ -108,7 +112,7 @@ summary(properties)
 
 # 8. Check for completeness of the data! Are there any missings? How are the missings distributed?
 
-As can be seen from question 7, there exist a great amount of missing values in many features of properties. The plot below shows the counts of missing values of each feature. One can see that at least a half of the features have more than one million missing values.
+&nbsp;&nbsp;As can be seen from question 7, there exist a great amount of missing values in many features of properties. The plot below shows the counts of missing values of each feature and how they distribute. One can see that at least a half of the features have more than one million missing values.
 
 ```{r, echo=FALSE}
 properties %>% 
@@ -120,3 +124,7 @@ properties %>%
         theme(axis.text = element_text(size = 6)) + 
         labs(x = "Feauture", y = "Proportion of Missing Values") 
 ```
+
+# References
+
+[1] Adalbert F.X. Wilhelm (2017),  The Big Data Challenge: Topics, Applications, Perspectives [Powerpoint slides]
