@@ -23,7 +23,7 @@ library(pryr)
 
 # Import data
 
-&nbsp;&nbsp;We first downloaded the datasets from [__here__](https://www.kaggle.com/c/zillow-prize-1/data), and then we imported and stored them as R dataframes (**properties** and **transaction** for "properties_2016.csv" and "train_2016.csv" respectively). In addition, the two dataframes were joined as a new dataframe, **joined_df**.
+&nbsp;&nbsp;We first downloaded the datasets from [__here__](https://www.kaggle.com/c/zillow-prize-1/data), then imported them into R as dataframes (**properties** and **transaction** for "properties_2016.csv" and "train_2016.csv" respectively). In addition, the two dataframes were joined as a new dataframe, **joined_df**.
 
 ```{r import data, cache=TRUE, results='hide'}
 properties <- fread("./data/properties_2016.csv")
@@ -129,9 +129,9 @@ summary(properties)
 
 # 8. Check for completeness of the data! Are there any missings? How are the missings distributed?
 
-&nbsp;&nbspAfter merging the two datasets, we obtain 90275 observations of which 37.1% are missing. 18 features lack 95% of values. Four features namely 'basementsqft', 'buildingclasstypeid', 'finishedsquarefeet13', 'storytypeid' miss 99.99 % of observations.
+&nbsp;&nbsp;After merging the two datasets, we obtain 90275 observations of which 37.1% are missing. 18 features lack 95% of values. Four features namely 'basementsqft', 'buildingclasstypeid', 'finishedsquarefeet13', 'storytypeid' miss 99.99 % of observations.
 
-&nbsp;&nbspHowever, 13 features have 0 missing values such as geographical and house room attributes. 
+&nbsp;&nbsp;However, 13 features have 0 missing values such as geographical and house room attributes. 
 The below horizontal histogram illustrates the distribution of NaN values across the dataset. 
 
 *Note: It is worth noting that this analysis is incomplete since it only checks for missing values. More missing data can be present in the dataset under other formats.*
