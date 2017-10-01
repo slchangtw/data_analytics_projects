@@ -33,9 +33,9 @@ joined_df <- merge(transaction, properties, all.x = TRUE)
 
 # 1. Explain why it is or why it is not a big data problem.
 
-&nbsp;&nbsp;We can safely conclude that analyzing this dataset is not a big data problem, since it fails to satisfy the volume, variety, velocity, veracity argument.^[2]^
+&nbsp;&nbsp;We can safely conclude that analyzing this dataset is not a big data problem, since it fails to satisfy the volume, variety, velocity. It only satisfies the veracity criterion.
  
-A closer look at the 4 Vs of big data will enable us to better understand this problem: 
+A closer look at the 4 Vs of big data[2] will enable us to better understand this problem: 
 
 1. The dataset is not voluminous  
 After using `pryr::object_size(properties)` in R, we know that properties's memory is merely `r round(object_size(properties) / 1e9, 3)` GBs. According to the table below[1], we know that handling this data set can be done on a consumer PC and does not require extra cores or machines.
@@ -129,9 +129,9 @@ summary(properties)
 
 # 8. Check for completeness of the data! Are there any missings? How are the missings distributed?
 
-After merging the two datasets, we obtain 90275 observations of which 37.1% are missing. 18 features lack 95% of values. Four features namely 'basementsqft', 'buildingclasstypeid', 'finishedsquarefeet13', 'storytypeid' miss 99.99 % of observations.
+&nbsp;&nbspAfter merging the two datasets, we obtain 90275 observations of which 37.1% are missing. 18 features lack 95% of values. Four features namely 'basementsqft', 'buildingclasstypeid', 'finishedsquarefeet13', 'storytypeid' miss 99.99 % of observations.
 
-However, 13 features have 0 missing values such as geographical and house room attributes. 
+&nbsp;&nbspHowever, 13 features have 0 missing values such as geographical and house room attributes. 
 The below horizontal histogram illustrates the distribution of NaN values across the dataset. 
 
 *Note: It is worth noting that this analysis is incomplete since it only checks for missing values. More missing data can be present in the dataset under other formats.*
