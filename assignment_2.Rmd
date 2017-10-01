@@ -134,7 +134,7 @@ summary(properties)
 &nbsp;&nbsp;However, 13 features have 0 missing values such as geographical and house room attributes. 
 The below horizontal histogram illustrates the distribution of NaN values across the dataset. 
 
-*Note: It is worth noting that this analysis is incomplete since it only checks for missing values. More missing data can be present in the dataset under other formats.*
+*Note: It is worth noting that this analysis is incomplete since it only checks for NA values. More missing data can be present in the dataset under other formats.*
 
 ```{r, echo=FALSE}
 joined_df %>% 
