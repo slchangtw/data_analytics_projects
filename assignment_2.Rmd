@@ -61,11 +61,11 @@ Buyers and sellers are not equally informed about the value of houses. In fact, 
 2. How does the Zillow fight information asymmetry through data analytics?    
 The Zestimate - Zillow’s star index estimates future house prices by analyzing user inputted data and public records. The target feature in this challenge aims to measure the log difference between Zillow’s proprietary estimates and the actual prices in the house market[6]. 
 
-Zillow launched this challenge in order to improve its housing valuation algorithm by learning from the most performing models submitted by Kaggle users.
+Zillow launched this challenge in order to improve its housing valuation algorithm by learning from the best performing models submitted by Kaggle users.
 
 # 3. How many data attributes are there?
 
-&nbsp;&nbsp;As can be seen from the result of `colnames(joined_df)`, the whole data set contains `r ncol(joined_df)` attributes. Also, properties contains `r ncol(properties)` attributes and transaction contains `r ncol(transaction)` attributes.
+&nbsp;&nbsp;After merging the two datasets we obtain 60 attributes in total. The initial properties dataframe contained 58 attributes while the transaction dataframe contained 3 attributes including the transaction date and target variable.
 
 ```{r}
 colnames(joined_df)
@@ -73,7 +73,7 @@ colnames(joined_df)
 
 # 4. Identify the type of the 15 attributes you find most relevant in this context
 
-&nbsp;&nbsp;Since the goal of this problem is to find minimal *log(error)*, and we assume that "relevant" means "linearly correlated". We selected the first 15 attributes with highest absolute correlation coefficients between logerror below.  
+&nbsp;&nbsp;The goal of this data challenge is to predict the *log(error)* value. To select 15 relevant attributes out of 60, we assume that "relevant" means "linearly correlated". Hence, we choose the first 15 attributes with highest absolute correlation coefficients between logerror below.  
 
 &nbsp;&nbsp;To do so, we pick numeric features, use `Hmisc::rcorr()` to get the correlation coefficient matrix, sort the correlation coefficients between logerror decreasingly, and choose the first 15 items. The below barplot showcases the final result. 
 
