@@ -23,7 +23,7 @@ library(pryr)
 
 # Import data
 
-&nbsp;&nbsp;We first downloaded the data sets from [__here__](https://www.kaggle.com/c/zillow-prize-1/data), and then we imported and stored them as R dataframes (**properties** and **transaction** for "properties_2016.csv" and "train_2016.csv" respectively). In addition, the two dataframes were joined as a new dataframe, **joined_df**.
+&nbsp;&nbsp;We first downloaded the datasets from [__here__](https://www.kaggle.com/c/zillow-prize-1/data), and then we imported and stored them as R dataframes (**properties** and **transaction** for "properties_2016.csv" and "train_2016.csv" respectively). In addition, the two dataframes were joined as a new dataframe, **joined_df**.
 
 ```{r import data, cache=TRUE, results='hide'}
 properties <- fread("./data/properties_2016.csv")
@@ -33,12 +33,12 @@ joined_df <- merge(transaction, properties, all.x = TRUE)
 
 # 1. Explain why it is or why it is not a big data problem.
 
-&nbsp;&nbsp;We can safely conclude that analyzing this data set is not a big data problem, since it fails to satisfy the volume, variety, velocity, veracity argument  (Shafer, 2017). 
+&nbsp;&nbsp;We can safely conclude that analyzing this dataset is not a big data problem, since it fails to satisfy the volume, variety, velocity, veracity argument.^[2]^
  
-A closer look at the 4Vs of big data will enable us to better understand this problem: 
+A closer look at the 4 Vs of big data will enable us to better understand this problem: 
 
 1. The dataset is not voluminous  
-After using `pryr::object_size(properties)` in R, we know that properties's memory is merely `r round(object_size(properties) / 1e9, 3)` GBs. According to the table below^[1]^, we know that handling this dataset can be done on a consumer PC and does not require extra cores or machines.
+After using `pryr::object_size(properties)` in R, we know that properties's memory is merely `r round(object_size(properties) / 1e9, 3)` GBs. According to the table below[1], we know that handling this data set can be done on a consumer PC and does not require extra cores or machines.
 
 ![](imgs/table1.png)
 
@@ -46,21 +46,22 @@ After using `pryr::object_size(properties)` in R, we know that properties's memo
 The dataset is well-defined in labeled rows and columns. In fact, the dataset comes with a dictionary that clearly explains the 58 attributes in the properties data.
 
 3. The dataset is static  
-Most of the datasets’ attributes come from government agencies that publish yearly or bi-monthly statistics. Moreover, this dataset does not include the newly user generated input, although users can update their housing information on Zillow’s portal anytime to replects changes of their households (Zillow, 2017).
+Most of the datasets’ attributes come from government agencies that publish yearly or bi-monthly statistics. Moreover, this dataset does not include the newly user generated input, although users can update their housing information on Zillow’s portal anytime to reflect changes in their home characteristics[3].  
 
 4. We can trust the data  
-The dataset’s observations come from public records regarding location and property characteristics. Although it can be missing or outdated (Zillow, 2017), we can safely assume that this dataset has not been manipulated to reflect bias that favors one housing area or any such fraudulent behaviors. Therefore, the uncertainty of this problem does not achive the level of big data problems.
+The dataset’s observations come from public records regarding location and property characteristics. Although it can be missing or outdated[3], we can safely assume that this dataset has not been manipulated to reflect bias that favors one housing area or similar fraudulent behaviors. Therefore, the uncertainty of this problem does not achive the level of big data problems.
 
 # 2. Why is it an analytics problem?
 
-&nbsp;&nbsp;Analytics aims to derive actionable insights from data. One starts by defining the problem at hand. Second, statistical models and computing algorithms are used to solve the issue. (Cooper, 2012). We will rely on this definition to answer this question.
+&nbsp;&nbsp;Analytics aims to derive actionable insights from data. To address an analytics issue, we define the problem. Second, statistical models and computing algorithms are used to solve the issue[4]. We will rely on this definition to answer this question.
 
-1. Problem definition
-Buyers and sellers are not equally informed about the value of houses. In fact, some players, such as real estate agents, have information advantage. They are more informed about future gentrification and demographic patterns that impact future house prices. (Kurlat and Stroebel, 2014). In order to resolve the information asymmetry in the market, Zillow strives to help house buyers and provide them with precise information of the housing market. (Zillow, 2017)
+1. Problem definition  
+Buyers and sellers are not equally informed about the value of houses. In fact, some players, such as real estate agents, have information advantage. They are more informed about future gentrification and demographic patterns that impact future house prices[5]. 
 
-2. How does the Zillow fight information asymmetry through data analytics?  
-By analyzing user input data and public records, Zillow predicts the house values, which is called Zestimate. And
-Zillow evaluates the log difference between Zestimate and actual prices to offer house buyers a clearer picture of future house market. Moreover, during the analytics process, Zillow relied on statistical models for precise prediction, and launched this challenge to improve its housing valuation algorithm by learning from the most performing models submitted by Kaggle users
+2. How does the Zillow fight information asymmetry through data analytics?    
+The Zestimate - Zillow’s star index estimates future house prices by analyzing user inputted data and public records. The target feature in this challenge aims to measure the log difference between Zillow’s proprietary estimates and the actual prices in the house market[6]. 
+
+Zillow launched this challenge in order to improve its housing valuation algorithm by learning from the most performing models submitted by Kaggle users.
 
 # 3. How many data attributes are there?
 
@@ -72,9 +73,9 @@ colnames(joined_df)
 
 # 4. Identify the type of the 15 attributes you find most relevant in this context
 
-&nbsp;&nbsp;Since the goal of this problem is to find minimal *log(error)*, and we assume that "relevant" means "linearly correlated". We show the first 15 attributes that has highest absolute correlation coefficients between logerror below.  
+&nbsp;&nbsp;Since the goal of this problem is to find minimal *log(error)*, and we assume that "relevant" means "linearly correlated". We selected the first 15 attributes with highest absolute correlation coefficients between logerror below.  
 
-&nbsp;&nbsp;Firstly, we pickced those features that are numeric, and then used `Hmisc::rcorr()` to get the correlation coefficient matrix. At last we sorted the correlation coefficients between logerror decreasingly, and chose the first 15 items. The result is shown as the barplot.
+&nbsp;&nbsp;To do so, we pick numeric features, use `Hmisc::rcorr()` to get the correlation coefficient matrix, sort the correlation coefficients between logerror decreasingly, and choose the first 15 items. The below barplot showcases the final result. 
 
 ```{r, warning=FALSE}
 numeric_df <- joined_df[, sapply(joined_df, is.numeric), with = FALSE]
@@ -102,15 +103,15 @@ top15_values %>%
 
 # 5. Determine whether the task refers to a supervised or unsupervised learning problem
 
-&nbsp;&nbsp;This should be a supervised learning task. As noted by Mehryar Mohri et al, the goal of supervised learning proplem is to use labeled data for prediction, namely, there is a dependant variable, which is usually denoted as y, and one uses other independant variables, which is also known as feature, to predict this dependant variable. Given that we have to predict *log(error)* variable using features in properties, so *log(error)* is the labeled variable we need to prediction in a supervised problem.  
+&nbsp;&nbsp;The Zillow home valuation challenge is a supervised learning problem. The target variable namely the *log(error)* is labeled. Hence, we rely on the independent variables to predict a known target.
 
 # 6. Find out what the standard analysis algorithms are for this analytics problem
 
-&nbsp;&nbsp;In order to find the optimal logerror, a standard analysis algorithm that can be used is the regression analysis. Regression analysis is for estimation the relationship among variables. for this task, one can build regression models to find the relationship between logerror and other variables.
+&nbsp;&nbsp;The Zillow Home Value Kaggle challenge is a **supervised learning** task that deals with a regression problem since the output value is a **real number**. Hence, the standard algorithms used in this task are regression models. 
 
 # 7. Download the data and provide descriptive summaries of the sample data
 
-&nbsp;&nbsp;First, we summarised transaction by ploting its trend. One can see an uprising trend of the average logerror of each month.
+&nbsp;&nbsp;To summarize the data, we visually display the target variable between January and October 2016, then use the `summary()` function in R to get the minimum, maximum, 1st and 3rd quartile, mean and median and number of missing values for each independent variable. 
 
 ```{r, echo = FALSE, fig.height=3, fig.width=4, fig.align='center'}
 transaction %>% 
@@ -122,25 +123,22 @@ transaction %>%
     labs(x = "Year-Month", y = "Mean Logerror")
 ```
 
-&nbsp;&nbsp;Also, we used `summary()` in R to summarise properties. One can see a noticeable number of missing values (NAs) in many of the features, and we would carry out a deeper analysis of these missing values in the next question.
-
 ```{r}
 summary(properties)
 ```
 
 # 8. Check for completeness of the data! Are there any missings? How are the missings distributed?
 
-&nbsp;&nbsp;For transaction, we first use `complete.cases()` to check whether each observation is complete or not. The result is shown below, and there is no incomplete row in transaction.
+After merging the two datasets, we obtain 90275 observations of which 37.1% are missing. 18 features lack 95% of values. Four features namely 'basementsqft', 'buildingclasstypeid', 'finishedsquarefeet13', 'storytypeid' miss 99.99 % of observations.
 
-```{r}
-sum(!complete.cases(transaction))
-```
+However, 13 features have 0 missing values such as geographical and house room attributes. 
+The below horizontal histogram illustrates the distribution of NaN values across the dataset. 
 
-&nbsp;&nbsp;For properties, as can be seen from question 7, there exist a great amount of missing values in many features of  The plot below shows the counts of missing values of each feature and how they distribute. One can see that 18 features lack 95% of values. For variable 'basementsqft', 'buildingclasstypeid', 'finishedsquarefeet13', 'storytypeid', they miss more that 99% of observations. Thirteen features, however, have zero missing values, such as geographical and house room attributes. 
+*Note: It is worth noting that this analysis is incomplete since it only checks for missing values. More missing data can be present in the dataset under other formats.*
 
 ```{r, echo=FALSE}
-properties %>% 
-    summarise_all(funs(sum(is.na(.)))) %>% 
+joined_df %>% 
+    summarise_all(funs(sum(is.na(.)) / n())) %>% 
     gather(key = "attribute", value = "na_counts") %>% 
     ggplot(aes(x = reorder(attribute, na_counts), y = na_counts)) +
         geom_bar(stat = "identity", fill = "red") +
@@ -153,4 +151,14 @@ properties %>%
 
 [1] Adalbert F.X. Wilhelm (2017),  The Big Data Challenge: Topics, Applications, Perspectives [Powerpoint slides]
 
+[2] Shafer, T. (2017). The 4 V's of Big Data and Data Science. Elderresearch.com. Retrieved 30 September 2017, from https://www.elderresearch.com/company/blog/42-v-of-big-data
 
+[3] Zillow, I. (2017). What is a Zestimate? Zillow's Zestimate Accuracy | Zillow. Zillow. Retrieved 30 September 2017, from https://www.zillow.com/zestimate/#acc
+
+[4] Cooper, A. (2012). What is Analytics? Definition and Essential Characteristics. cetis.org. Retrieved 30 September 2017, from http://publications.cetis.org.uk/wp-content/uploads/2012/11/What-is-Analytics-Vol1-No-5.pdf
+
+[5] Kurlat, P., & Stroebel, J. (2014). TESTING FOR INFORMATION ASYMMETRIES IN REAL ESTATE MARKETS. http://www.nber.org/. Retrieved 30 September 2017, from http://www.nber.org/papers/w19875.pdf
+
+[6] Zillow Prize: Zillow’s Home Value Prediction (Zestimate) | Kaggle. (2016). Kaggle.com. Retrieved 30 September 2017, from https://www.kaggle.com/c/zillow-prize-1#description
+
+[7] Supervised Learning Workflow and Algorithms - MATLAB & Simulink - MathWorks United Kingdom. (2017). De.mathworks.com. Retrieved 30 September 2017, from https://de.mathworks.com/help/stats/supervised-learning-machine-learning-workflow-and-algorithms.html#buxe4f_
