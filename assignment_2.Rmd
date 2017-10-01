@@ -55,8 +55,8 @@ The dataset’s observations come from public records regarding location and pro
 
 &nbsp;&nbsp;Analytics aims to derive actionable insights from data. One starts by defining the problem at hand. Second, statistical models and computing algorithms are used to solve the issue. (Cooper, 2012). We will rely on this definition to answer this question.
 
-1. Problem defining   
-Buyers and sellers are not equally informed about the value of houses. In fact, some players, such as real estate agents, have information advantage. They are more informed about future gentrification and demographic patterns that impact future house prices. (Kurlat and Stroebel, 2014). In order to resolve the information asymmetry in the market, Zillow strive to help house buyers and provide them with precise information of the housing market. (Zillow, 2017)
+1. Problem definition
+Buyers and sellers are not equally informed about the value of houses. In fact, some players, such as real estate agents, have information advantage. They are more informed about future gentrification and demographic patterns that impact future house prices. (Kurlat and Stroebel, 2014). In order to resolve the information asymmetry in the market, Zillow strives to help house buyers and provide them with precise information of the housing market. (Zillow, 2017)
 
 2. How does the Zillow fight information asymmetry through data analytics?  
 By analyzing user input data and public records, Zillow predicts the house values, which is called Zestimate. And
@@ -74,7 +74,7 @@ colnames(joined_df)
 
 &nbsp;&nbsp;Since the goal of this problem is to find minimal *log(error)*, and we assume that "relevant" means "linearly correlated". We show the first 15 attributes that has highest absolute correlation coefficients between logerror below.  
 
-&nbsp;&nbsp;Firstly, we pickcd those features that are numeric, and then used `Hmisc::rcorr()` to get the correlation coefficient matrix. At last we sorted the correlation coefficients between logerror decreasingly, and chose the first 15 items. The result is shown as the barplot.
+&nbsp;&nbsp;Firstly, we pickced those features that are numeric, and then used `Hmisc::rcorr()` to get the correlation coefficient matrix. At last we sorted the correlation coefficients between logerror decreasingly, and chose the first 15 items. The result is shown as the barplot.
 
 ```{r, warning=FALSE}
 numeric_df <- joined_df[, sapply(joined_df, is.numeric), with = FALSE]
