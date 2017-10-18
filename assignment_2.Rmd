@@ -23,7 +23,7 @@ library(pryr)
 
 # Import data
 
-&nbsp;&nbsp;We first downloaded the datasets from [__here__](https://www.kaggle.com/c/zillow-prize-1/data), then imported them into R as dataframes (**properties** and **transaction** for "properties_2016.csv" and "train_2016.csv" respectively). In addition, the two dataframes were joined as a new dataframe, **joined_df**.
+&nbsp;&nbsp;After downloading the datasets from [__here__](https://www.kaggle.com/c/zillow-prize-1/data), we imported them into R as dataframes (**properties** and **transaction** for "properties_2016.csv" and "train_2016.csv" respectively). In addition, the two dataframes were joined as a new dataframe, **joined_df**.
 
 ```{r import data, cache=TRUE, results='hide'}
 properties <- fread("./data/properties_2016.csv")
