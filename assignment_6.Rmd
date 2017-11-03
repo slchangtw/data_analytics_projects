@@ -30,9 +30,11 @@ dend %>%
     set("labels_cex", 0.3) %>% 
     plot(horiz = TRUE, xlab = "Height")
 ```
+
 ## b) Cut the dendrogram at a height that results in three distinct clusters. Which states belong to which clusters?
 
 The plot belows has shown that three clusters in different colors (blue, green, and red). We also show the various states that belong to each cluster.
+
 ```{r, echo=FALSE}
 dend %>% 
     set("branches_k_color", k = 3) %>% 
@@ -54,6 +56,7 @@ names(which(cutree(hc, k = 3) == 2))
 ```{r, echo=FALSE}
 names(which(cutree(hc, k = 3) == 1))
 ```
+
 ## c) Hierarchically cluster the states using complete linkage and Euclidean distance, after scaling the variables to have standard deviation one.
 
 After applying `scale()` function in R, we obtain a standardised representation of the data set. The results are shown below.  
