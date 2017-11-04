@@ -5,7 +5,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment = "")
+knitr::opts_chunk$set(echo = TRUE, comment = "", fig.align = 'center')
 ```
 
 ```{r library Packages, include=FALSE}
@@ -15,17 +15,24 @@ library(ggdendro)
 library(dendextend)
 ```
 
+The analysis was construted in R, and the code can be found [here]().
+
 # 1. First, perform hierarchical clustering on the states.
 
 ## a) Using hierarchical clustering with complete linkage and Euclidean distance, cluster the states
 
-The `dist()` function is used to compute distance matrix.
-A distance matrix is a measure of similarity between two cases, based on set of numeric value. The default distance measure is the **Euclidean Distance**. The results are shown below. 
+To perform hierarchical clustering (`hclust()` function), a distance matrix, which measures similarity between elements of a set, is required. In R, `dist()` function (default measure is **Euclidean Distance**) can assist us in deriving the matrix.
+After a distance matrix is computed, the `hclust()` function can then be applied to the matrix, and the result is shown as the dendrogram below.
+
 ```{r}
 hc <- USArrests %>% 
         dist() %>% 
         hclust()
+```
+
+```{r, echo=FALSE}
 dend <- hc %>% as.dendrogram()
+
 dend %>% 
     set("labels_cex", 0.3) %>% 
     plot(horiz = TRUE, xlab = "Height")
@@ -33,7 +40,7 @@ dend %>%
 
 ## b) Cut the dendrogram at a height that results in three distinct clusters. Which states belong to which clusters?
 
-The plot belows has shown that three clusters in different colors (blue, green, and red). We also show the various states that belong to each cluster.
+The three distinct clusters can be acquired by cutting the dendrogram at the height of 170 as the plot below. The three cluster are labeled in different color (blue, green, and red) and states in different clusters are also listed.
 
 ```{r, echo=FALSE}
 dend %>% 
@@ -59,40 +66,77 @@ names(which(cutree(hc, k = 3) == 1))
 
 ## c) Hierarchically cluster the states using complete linkage and Euclidean distance, after scaling the variables to have standard deviation one.
 
-After applying `scale()` function in R, we obtain a standardised representation of the data set. The results are shown below.  
+Standardised data can be obtained through `scale()` function. The dendrogram indicates the hierarchical tree of the standardised dataset. 
 
 ```{r}
 scaled_USArrests <- scale(USArrests) 
 hc_scaled <- hclust(dist(scaled_USArrests))
+```
+
+```{r, echo=FALSE}
 dend_scaled <- hc_scaled %>% as.dendrogram()
 
 dend_scaled %>% 
     set("labels_cex", 0.3) %>% 
     plot(horiz = TRUE, xlab = "Height")
-
 ```
 
 ## d) What effect does scaling the variables have on the hierarchical clustering obtained? In your opinion, should the variables be scaled before the inter-observation dissimilarities are computed? Provide a justification for your answer
 
-Firstly we can see that the height in two dendrograms is significantly different. The difference could result from the `Assault` variable, since its variance is larger than that of the other three variables. Therefore, the result could dominated by this variable.
+The heights in the two dendrograms differ significantly.  The difference could result from the `Assault` variable, since its standard deviation is considerably higher than that of the other three variables.
 
 ```{r}
-apply(USArrests, 2, var)
+apply(USArrests, 2, sd)
 ```
+
+The histogram also reveals that the `Assault` variable dominates the clusters derived from the original dataset.   
+
+```{r, echo=FALSE, fig.height=3, fig.width=3}
+grouped_assault <- data.frame(Assault = USArrests$Assault, cluster_hc = cutree(hc, k = 3))
+
+ggplot(grouped_assault) +
+    geom_histogram(aes(x = Assault, fill = as.factor(cluster_hc)), bins = 50) + 
+    guides(fill = FALSE)
+```
+
+In light of the case above, the dataset should be standardised if it contains variables with high variance.
 
 # 2. Perform k-means clustering, selecting a suitable range for k. Compare the results with the ones from question 1
 
-We choose the number of cluster from 3 to 10, and then see the elbow graph to see the change in total withinss between two cluster values (7 and 8) ... .
+In this study, the cluster values from 3 to 8 are chosen, and we picked the desired number through the elbow method. As can be seen from the elbow diagram, there exists solely slight drop in the within-cluster sum of squares from 7 to 8. Therefore, we selected 7 as the number of centers.
 
-
-```{r} 
+```{r, echo=FALSE, fig.height=5, fig.width=5} 
 set.seed(42)
-k_max <- 10
+k_max <- 8
 wss <- 
-    sapply(3:k_max,  function(k) {kmeans(scaled_USArrests, k, iter.max = 50)$tot.withinss})
+    sapply(3:k_max, function(k) {kmeans(scaled_USArrests, k, iter.max = 50)$tot.withinss})
 
 plot(3:k_max, wss,
      type = "b", pch = 19, frame = FALSE, 
      xlab = "Number of clusters K",
      ylab = "Total within-clusters sum of squares")
+```
+
+```{r, echo=FALSE}
+kc <- kmeans(scaled_USArrests, centers = 7, iter.max = 50)
+```
+
+The following tables show the clusters derived from the two approaches. Though the order is different, a number of clusters are consistent, such as cluster with "Alabama", with "Alaska" and with "Arizona". But the members in other clusters differ given that they are grouped by two methods. 
+
+**States in each cluster (Hierachical clustering)**
+
+```{r, echo=FALSE}
+for (i in 1:7) {
+    message("Group ", i)
+    print(names(which(cutree(hc_scaled, 7) == i)))
+}
+```
+
+**States in each cluster (Kmeans clustering)**
+
+```{r, echo=FALSE}
+for (i in 1:7) {
+    message("Group ", i)
+    print(names(which(kc$cluster == i)))
+}
 ```
