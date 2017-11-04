@@ -15,7 +15,7 @@ library(ggdendro)
 library(dendextend)
 ```
 
-The analysis was construted in R, and the code can be found [here]().
+The analysis was construted in R, and the code can be found *[here](https://github.com/slchangtw/data_analytics_projects/blob/master/assignment_6.Rmd)*.
 
 # 1. First, perform hierarchical clustering on the states.
 
