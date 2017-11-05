@@ -69,8 +69,9 @@ names(which(cutree(hc, k = 3) == 1))
 Standardised data can be obtained through `scale()` function. The dendrogram indicates the hierarchical tree of the standardised dataset. 
 
 ```{r}
-scaled_USArrests <- scale(USArrests) 
-hc_scaled <- hclust(dist(scaled_USArrests))
+scaled_USArrests <- USArrests %>% scale()
+               
+hc_scaled <- scaled_USArrests %>% dist() %>% hclust()
 ```
 
 ```{r, echo=FALSE}
@@ -105,7 +106,7 @@ In light of the case above, the dataset should be standardised if it contains va
 
 In this study, the cluster values from 3 to 8 are chosen, and we picked the desired number through the elbow method. As can be seen from the elbow diagram, there exists solely slight drop in the within-cluster sum of squares from 7 to 8. Therefore, we selected 7 as the number of centers.
 
-```{r, echo=FALSE, fig.height=5, fig.width=5} 
+```{r, echo=FALSE, fig.height=4, fig.width=4} 
 set.seed(42)
 k_max <- 8
 wss <- 
