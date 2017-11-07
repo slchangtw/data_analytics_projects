@@ -14,7 +14,7 @@ library(ggplot2)
 library(knitr)
 ```
 
-This study was conducted in R, and the source code can be found [here]().
+This study was conducted in R, and the source code can be found [here](https://github.com/slchangtw/data_analytics_projects/blob/master/assignment_7.Rmd).
 
 # 1. Generate a simulated data set with 20 observations in each of three classes (i.e. 60 observations total), and 50 variables.
 
@@ -39,9 +39,11 @@ dim(dat)
 
 # 2. Perform PCA on the 60 observations and plot the first two principal component score vectors. Use a different color to indicate the observations in each of the three classes. 
 
-```{r, echo=FALSE}
+```{r}
 pca <- prcomp(dat) 
+```
 
+```{r, echo=FALSE}
 two_pcs <- data.frame(index = as.factor(1:60), 
                            PC1 = pca$x[, 1], 
                            PC2 = pca$x[, 2],
