@@ -71,7 +71,7 @@ ggplot(two_pcs) +
 
 # 3. Perform K-means clustering of the observations with K = 3. How well do the clusters that you obtained in K-means clustering compare to the true class labels?
 
-By applying `kmeans()` on the dataset, we can obtain the results of k-means cluster analysis. The following table indicates that the k-means clusters are consistent with the real groups although the order differs.
+By applying `kmeans()` on the dataset, we can obtain the results of K-means cluster analysis. The following table indicates that the K-means clusters are consistent with the real groups although the order differs.
 
 ```{r}
 set.seed(42)
@@ -119,7 +119,7 @@ table(kc_4$cluster, c(rep(1, 20), rep(2, 20), rep(3, 20))) %>% kable()
 
 # 6. Now perform K-means clustering with K = 3 on the first two principal component score vectors, rather than on the raw data. That is, perform K-means clustering on the 60 × 2 matrix of which the first column is the first principal component score vector, and the second column is the second principal component score vector. Comment on the results.
 
-To perform this task, we extracted the first two score vectors and then applied k-means on them. As the considerable difference we indicated in task 2, the kmeans groups align with the real groups.
+To perform this task, we extracted the first two score vectors and then applied K-means on them. As the considerable difference we indicated in task 2, the K-means groups align with the real groups.
 
 ```{r}
 set.seed(42)
@@ -130,7 +130,7 @@ table(kc_pc_3$cluster, c(rep(1, 20), rep(2, 20), rep(3, 20))) %>% kable()
 
 # 7. Using the `scale()` function, perform K-means clustering with K = 3 on the data after scaling each variable to have standard deviation one. How do these results compare to those obtained in (3)? Explain.
 
-The kmeans groups derived from the scaled dataset are consistent with the real groups. The results should not be unexpected, given that the scale of each variable is reduced to the same, so the results would be more stable, that is, be more likely to match the real groups, when kmeans clustering is applied.
+The K-means groups derived from the scaled dataset are consistent with the real groups. The results should not be unexpected, given that the scale of each variable is reduced to the same, so the results would be more stable, that is, be more likely to match the real groups, when K-meanss clustering is applied.
 
 ```{r}
 dat_scaled <- scale(dat)
@@ -142,7 +142,7 @@ table(kc_3$cluster, c(rep(1, 20), rep(2, 20), rep(3, 20))) %>% kable()
 
 # 8. Use the scaled variables and run a PCA on them. Now perform K-means clustering with K = 3 on the first two principal component score vectors, rather than on the raw data. How do these results compare to those obtained in (3) and (7)? Explain.
 
-The kmeans clusters obtained in this task are the same with those in (3) and (7). The two plots below show that significant difference exists in the values of the first two score vectors. Thus the difference results in the kmeans clusters that match the real groups.
+The K-meanss clusters obtained in this task are the same with those in (3) and (7). The two plots below show that significant difference exists in the values of the first two score vectors. Thus the difference results in the K-meanss clusters that match the real groups.
 
 ```{r}
 pca_scaled <- prcomp(dat, center = TRUE, scale. = TRUE) 
