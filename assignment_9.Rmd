@@ -5,29 +5,90 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, comment = "")
 ```
+
+```{r, include=FALSE}
+library(ISLR)
+library(tree)
+library(gbm)
+library(randomForest)
+```
+
+In this assignment we aim at predicting **Salary** in the **Hitters** data set which is available in the ISLR package in R.
 
 ## 1. Remove the observations for whom the salary information is unknown, and then log-transform the salaries.
 
+```{r}
+dat <- Hitters[!is.na(Hitters$Salary), ]
+dat$Salary <- log(dat$Salary)
+```
+
 ## 2. Create a training set consisting of the first 200 observations, and a test set consisting of the remaining observations.
+
+```{r}
+train_dat <- dat[1:200, ]
+test_dat <- dat[201:nrow(dat), ]
+```
 
 ## 3. Fit a tree to the training data, with Salary as the response and the other variables as predictors. Use the `summary()` function to produce summary statistics about the tree, and describe the results obtained. What is the training error rate? How many terminal nodes does the tree have?
 
+```{r}
+tree_mod <- tree(Salary ~ ., data = train_dat, split = "deviance")
+pred_train <- predict(tree_mod, train_dat)
+
+mse_train <- mean((pred_train - train_dat$Salary) ^ 2)
+```
+
 ## 4. Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
+
+```{r}
+tree_mod
+```
 
 ## 5. Create a plot of the tree, and interpret the results.
 
+```{r}
+plot(tree_mod)
+text(tree_mod, cex = 0.5)
+```
+
 ## 6. Apply the `cv.tree()` function to the training set in order to determine the optimal tree size. Produce a plot with tree size on the x-axis and cross-validated classification mean squared error on the y-axis.
+
+```{r}
+cv_model <- cv.tree(tree_mod, K = 10)
+plot(cv_model)
+```
 
 ## 7. Which tree size corresponds to the lowest cross-validated MSE?
 
+```{r}
+cv_model$size[which(cv_model$dev == min(cv_model$dev))]
+```
+
 ## 8. Produce a pruned tree corresponding to the optimal tree size obtained using cross-validation. If cross-validation does not lead to selection of a pruned tree, then create a pruned tree with five terminal nodes.
+
+```{r}
+tree_pruned <- prune.tree(tree_mod, best = 5)
+tree_pruned
+```
 
 ## 9. Compare the training MSE between the pruned and un-pruned trees. Which is higher?
 
+```{r}
+pred_train_pruned <- predict(tree_pruned, train_dat)
+mse_train_pruned <- mean((pred_train_pruned - train_dat$Salary) ^ 2)
+```
+
 ## 10. Compare the test error rates between the pruned and unpruned trees. Which is higher?
 
+```{r}
+pred_test <- predict(tree_mod, test_dat)
+mse_test <- mean((pred_test - test_dat$Salary) ^ 2)
+
+pred_test_pruned <- predict(tree_pruned, test_dat)
+mse_test_pruned <- mean((pred_test_pruned - test_dat$Salary) ^ 2)
+```
 ## 11. Perform boosting on the training set with 1,000 trees for a range of values of the shrinkage parameter lambda. Produce a plot with different shrinkage values on the x-axis and the corresponding training set MSE on the y-axis.
 
 
