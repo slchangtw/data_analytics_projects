@@ -1,18 +1,21 @@
 ---
 title: "Assignment 9 by Team 4"
-author: "Shun-Lung Chang"
+author: "Shun-Lung Chang, Muhammad Hammad Hassan, Kavish Tyagi"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment = "")
+knitr::opts_chunk$set(echo = TRUE, comment = "", fig.height = 4, fig.width = 4, fig.align = 'center')
 ```
 
 ```{r, include=FALSE}
 library(ISLR)
 library(tree)
 library(gbm)
+library(ipred)
 library(randomForest)
+library(ggplot2)
+library(knitr)
 ```
 
 In this assignment we aim at predicting **Salary** in the **Hitters** data set which is available in the ISLR package in R.
@@ -34,10 +37,14 @@ test_dat <- dat[201:nrow(dat), ]
 ## 3. Fit a tree to the training data, with Salary as the response and the other variables as predictors. Use the `summary()` function to produce summary statistics about the tree, and describe the results obtained. What is the training error rate? How many terminal nodes does the tree have?
 
 ```{r}
-tree_mod <- tree(Salary ~ ., data = train_dat, split = "deviance")
-pred_train <- predict(tree_mod, train_dat)
+tree_mod <- tree(Salary ~ ., data = train_dat)
+summary(tree_mod)
+```
 
+```{r}
+pred_train <- predict(tree_mod, train_dat)
 mse_train <- mean((pred_train - train_dat$Salary) ^ 2)
+mse_train
 ```
 
 ## 4. Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
@@ -56,7 +63,8 @@ text(tree_mod, cex = 0.5)
 ## 6. Apply the `cv.tree()` function to the training set in order to determine the optimal tree size. Produce a plot with tree size on the x-axis and cross-validated classification mean squared error on the y-axis.
 
 ```{r}
-cv_model <- cv.tree(tree_mod, K = 10)
+set.seed(42)
+cv_model <- cv.tree(tree_mod)
 plot(cv_model)
 ```
 
@@ -78,6 +86,7 @@ tree_pruned
 ```{r}
 pred_train_pruned <- predict(tree_pruned, train_dat)
 mse_train_pruned <- mean((pred_train_pruned - train_dat$Salary) ^ 2)
+mse_train_pruned
 ```
 
 ## 10. Compare the test error rates between the pruned and unpruned trees. Which is higher?
@@ -85,17 +94,77 @@ mse_train_pruned <- mean((pred_train_pruned - train_dat$Salary) ^ 2)
 ```{r}
 pred_test <- predict(tree_mod, test_dat)
 mse_test <- mean((pred_test - test_dat$Salary) ^ 2)
+mse_test
+```
 
+```{r}
 pred_test_pruned <- predict(tree_pruned, test_dat)
 mse_test_pruned <- mean((pred_test_pruned - test_dat$Salary) ^ 2)
+mse_test_pruned
 ```
+
 ## 11. Perform boosting on the training set with 1,000 trees for a range of values of the shrinkage parameter lambda. Produce a plot with different shrinkage values on the x-axis and the corresponding training set MSE on the y-axis.
 
+```{r}
+mse_train <- sapply(seq(0, 1, by = 0.005), function(lambda) {
+    mod <- gbm(Salary ~ .,distribution = "gaussian", 
+        data = train_dat, n.trees = 1000, shrinkage = lambda)
+    mod$train.error[length(mod$train.error)]
+})
+```
+
+```{r, echo=FALSE, fig.width=5}
+ggplot() + 
+    geom_point(aes(x = seq(0, 1, by = 0.005), y = mse_train)) + 
+    labs(x = "Shrinkage Parameter", y = "Training MSE")
+```
 
 ## 12. Produce a plot with different shrinkage values on the x-axis and the corresponding test set MSE on the y-axis.
 
+```{r}
+mse_test <- sapply(seq(0, 1, by = 0.005), function(lambda) {
+    mod <- gbm(Salary ~ .,distribution = "gaussian", 
+        data = train_dat, n.trees = 1000, shrinkage = lambda)
+    pred <- predict(mod, test_dat, n.trees = 1000)
+    mean((pred - test_dat$Salary) ^ 2) 
+})
+```
+
+```{r, echo=FALSE, fig.width=5}
+ggplot() + 
+    geom_point(aes(x = seq(0, 1, by = 0.005), y = mse_test)) + 
+    labs(x = "Shrinkage Parameter", y = "Test MSE")
+```
+
 ## 13. Which variables appear to be the most important predictors in the boosted model?
+
+```{r}
+gbm_mod <- gbm(Salary ~ .,distribution = "gaussian", 
+               data = train_dat, n.trees = 1000, shrinkage = 0.225)
+kable(summary(gbm_mod, plotit = FALSE)[1:5, ])
+```
 
 ## 14. Now apply bagging to the training set. What is the test set MSE for this approach?
 
+```{r}
+bagging_mod <- bagging(Salary ~ ., data = train_dat)
+pred_test_bagging <- predict(bagging_mod, test_dat)
+
+mse_test_bagging <- mean((pred_test_bagging - test_dat$Salary) ^ 2)
+mse_test_bagging
+```
+
 ## 15. Now apply random forest to the training set. What is the test set MSE for this approach? Which variables appear to be the most important predictors in the random forest model?
+```{r}
+rf_mod <- randomForest(Salary ~ ., data = train_dat)
+
+pred_test_rf <- predict(rf_mod, test_dat)
+mse_test_rf <- mean((pred_test_rf - test_dat$Salary) ^ 2)
+mse_test_rf
+```
+
+```{r}
+d <- data.frame(Features = rownames(rf_mod$importance), 
+                Importance = rf_mod$importance[, 1])
+kable(d[order(d$Importance, decreasing = TRUE)[1:5], ])
+```
