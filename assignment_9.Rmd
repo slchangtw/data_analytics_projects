@@ -109,7 +109,7 @@ tree_pruned
 
 ## 9. Compare the training MSE between the pruned and un-pruned trees. Which is higher?
 
-The MSE of pruned tree is 0.2106276, which is higher than unpruned tree's MSE (0.1581972). The result is foreseeable, since the pruned tree could not keep growing even though it could for better performance in training dataset.
+The MSE of pruned tree is 0.2106276, which is higher than the unpruned tree's MSE (0.1581972). The result is foreseeable, since the pruned tree could not keep growing even though it could for better performance in training dataset.
 
 ```{r}
 pred_train_pruned <- predict(tree_pruned, train_dat)
