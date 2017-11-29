@@ -5,7 +5,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment = "", fig.align = 'center', fig.width = 5, fig.height = 3.5)
+knitr::opts_chunk$set(echo = TRUE, comment = "", fig.align = 'center', fig.width = 5, fig.height = 2.5)
 ```
 
 ```{r library, include=FALSE}
@@ -20,6 +20,7 @@ library(tidyr)
 library(purrr)
 library(ggplot2)
 library(wordcloud)
+library(knitr)
 ```
 
 ```{r obtain data, echo=FALSE}
@@ -62,7 +63,7 @@ colnames(text_df)
 ```
 
 ```{r}
-text_df[2]
+text_df[2] 
 ```
 
 ## 2. Remove stop words and perform stemming.
@@ -73,8 +74,9 @@ t <- text_df %>%
     anti_join(tibble(word = c(stopwords("de"), stopwords("en")))) %>% 
     mutate(stemmed_word = wordStem(word))
 
-head(t)
+head(t) %>% kable()
 ```
+
 ## 3. Perform a frequency analysis to compute the term-document (TD) matrix. What are the most common terms?
 
 ```{r}
@@ -106,7 +108,7 @@ td <- word_counts %>% spread(stemmed_word, n, fill = 0) %>%
 ```
 
 ```{r, echo=FALSE}
-td[1:10, top_5_words$stemmed_word]
+td[1:10, top_5_words$stemmed_word] %>% kable()
 ```
 
 ## 4. Compute inverse-document frequency (IDF) and term importance (TI). What are now the most common terms?
@@ -114,6 +116,7 @@ td[1:10, top_5_words$stemmed_word]
 ```{r}
 tf_idf <- word_counts %>% 
     bind_tf_idf(term = stemmed_word, document = id, n = n)
+head(tf_idf) %>% kable()
 ```
 
 ```{r, echo=FALSE}
@@ -128,7 +131,7 @@ tf_idf %>%
     theme_bw()
 ```
 
-```{r}
+```{r, echo=FALSE}
 tf_idf %>%
     filter(id == 1) %>% 
     arrange(tf_idf) %>% 
@@ -147,11 +150,11 @@ euc_dist <- dist2(td, method = 'euclidean')
 ```
 
 ```{r}
-cos_dist[1:3, 1:3]
+cos_dist[1:3, 1:3] %>% kable()
 ```
 
 ```{r}
-euc_dist[1:3, 1:3]
+euc_dist[1:3, 1:3] %>% kable()
 ```
 
 ## 6. Apply a multi-dimensional scaling approach to the distance matrix and render a 2D scatter- plot. Compare the two distance metrics.
