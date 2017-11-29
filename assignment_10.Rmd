@@ -54,7 +54,7 @@ text_df <- data_frame(id = 1:length(final_text),
                       text = final_text,
                       year = year)
 ```
-This study was conducted in R. The source code can be found [here]().
+This study was conducted in R. The source code can be found [here](https://github.com/slchangtw/data_analytics_projects/blob/master/assignment_10.Rmd).
 
 ## 1. Convert the html to text files and separate the individual news items. The individual press release items serve as documents.
 ```{r}
