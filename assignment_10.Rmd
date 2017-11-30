@@ -21,6 +21,7 @@ library(purrr)
 library(ggplot2)
 library(wordcloud)
 library(knitr)
+library(gridExtra)
 ```
 
 ```{r obtain data, echo=FALSE}
@@ -58,6 +59,13 @@ text_df <- data_frame(id = 1:length(final_text),
 This study was conducted in R. The source code can be found [here](https://github.com/slchangtw/data_analytics_projects/blob/master/assignment_10.Rmd).
 
 ## 1. Convert the html to text files and separate the individual news items. The individual press release items serve as documents.
+
+The data was retrieved from the Jacobs University press release archives, and then compiled into a dataframe with three variables:
+
+- id: serial number for each press release
+- text: title and content of each press release
+- year: year of issue
+
 ```{r}
 colnames(text_df)
 ```
@@ -67,6 +75,8 @@ text_df[2]
 ```
 
 ## 2. Remove stop words and perform stemming.
+
+Stop words can be discarded by `stopwords()` in the package **tokenizers**. Stemming can be carried out by `wordStem` in the package **SnowballC**. The results are shown below.
 
 ```{r}
 t <- text_df %>%
@@ -158,19 +168,18 @@ cos_dist_fit <- cmdscale(cos_dist, k = 2)
 euc_dist_fit <- cmdscale(euc_dist, k = 2)
 ```
 
+
 ```{r, echo=FALSE}
-ggplot() +
+scaled_cos_dist <- ggplot() +
     geom_point(aes(x = cos_dist_fit[, 1], y = cos_dist_fit[, 2])) +
-    labs(title = "Scaled Cosine Distance Matrix", x = "x", y = "y")
-```
+    labs(title = "Scaled Cosine Distance Matrix", x = "Coordinate 1", y = "Coordinate 2")
 
-
-```{r, echo=FALSE}
-ggplot() +
+scaled_euc_dist <- ggplot() +
     geom_point(aes(x = euc_dist_fit[, 1], y = euc_dist_fit[, 2])) +
-    labs(title = "Scaled Euclidean Distance Matrix", x = "x", y = "y")
-```
+    labs(title = "Scaled Euclidean Distance Matrix", x = "Coordinate 1", y = "Coordinate 2")
 
+grid.arrange(scaled_cos_dist, scaled_euc_dist, ncol = 2)
+```
 ## 7. Capture the year of release during parsing and color code the scatterplot by time. Produce a Word Cloud for each year.
 
 ```{r}
@@ -183,11 +192,14 @@ create_wordcloud <- function(year) {
     
     wordcloud(words = d$stemmed_word, freq = d$n, 
               max.words = 50, colors = brewer.pal(8, "Dark2"))
+    text(x = 0.5, y = 1, cex = 0.5, as.character(year))
 } 
 ```
 
-```{r, warning=FALSE}
-create_wordcloud(2015)
+```{r, warning=FALSE, fig.height=2, fig.width=2}
+for (i in seq(2015, 2013, -1)) {
+    create_wordcloud(i)
+}
 ```
 
 ```{r, eval=FALSE, include=FALSE}
@@ -222,5 +234,10 @@ r <- bind_rows(r)
 
 ggplot(r) +
     geom_point(aes(x = cos_x, y = cos_y, color = factor(year))) +
+    theme_bw()
+```
+```{r, eval=FALSE, include=FALSE}
+ggplot(r) +
+    geom_point(aes(x = euc_x, y = euc_y, color = factor(year))) +
     theme_bw()
 ```
