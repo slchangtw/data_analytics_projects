@@ -35,7 +35,7 @@ text_2008 <- read_html(url_2008) %>%
 text_2008 <- text_2008[-11]
 
 # remove more ... »
-text_2008 <- str_replace(text_2008, patter = " more ... »", replacement = "")
+text_2008 <- str_replace(text_2008, pattern = " more ... »", replacement = "")
 
 # retrieve content in archive 2015
 url_2015 <- "https://www.jacobs-university.de/press-release-archive-2015"
@@ -71,7 +71,7 @@ colnames(text_df)
 ```
 
 ```{r}
-text_df[2] 
+text_df[1:5, 2]
 ```
 
 ## 2. Remove stop words and perform stemming.
@@ -81,7 +81,7 @@ Stop words can be discarded by `tokenizers::stopwords()`. Stemming can be carrie
 ```{r}
 t <- text_df %>%
     unnest_tokens(word, text) %>% 
-    anti_join(tibble(word = c(stopwords("de"), stopwords("en")))) %>% 
+    anti_join(tibble(word = c(stopwords("de"), stopwords("en"))), by = "word") %>% 
     mutate(stemmed_word = wordStem(word))
 ```
 
@@ -91,7 +91,7 @@ head(t) %>% kable()
 
 ## 3. Perform a frequency analysis to compute the term-document (TD) matrix. What are the most common terms?
 
-After the frequency analysis is performed by `dplyr::count()`, its results indicates that the most frequent three words in these press releases are 'univers', 'jacob', and 'bremen', which come as no surprise.
+The frequency analysis can be performed by `dplyr::count()`, and its results indicates that the most frequent three words are 'univers', 'jacob', and 'bremen'. 
 
 ```{r}
 top_5_words <- t %>% 
@@ -129,7 +129,7 @@ td[1:10, top_5_words$stemmed_word] %>% kable(row.names = TRUE)
 
 ## 4. Compute inverse-document frequency (IDF) and term importance (TI). What are now the most common terms?
 
-Inverse-document frequency and term importance in each press release can be acquired by `tidytext::bind_tf_idf()`. The following table shows that 'univers' gained low importance that resulted from its ubiquitousness in the whole corpus.
+Inverse-document frequency and term importance in each press release can be acquired by `tidytext::bind_tf_idf()`. The following table shows that 'univers' gained low importance, which resulted from its ubiquitousness in the whole corpus.
 
 ```{r}
 tf_idf <- word_counts %>% 
@@ -140,7 +140,7 @@ tf_idf <- word_counts %>%
 head(tf_idf) %>% kable()
 ```
 
-A closer look at the term importance of the first document reveals that important terms are surrounding the topics of cyber and emotion. And if people check the press title, which is "Wissenschaft jenseits von Science Fiction: Jacobs University beteiligt sich am CyberEmotions-Project der EU", they can immediately understand the reason behind the results. 
+A closer look at the term importance of the first document reveals that important terms are surrounding the topics of cyber and emotion, and the press title: "Wissenschaft jenseits von Science Fiction: Jacobs University beteiligt sich am CyberEmotions-Project der EU", also shows it is an article regarding emotions in robotics.
 
 ```{r, echo=FALSE}
 tf_idf %>%
@@ -175,7 +175,7 @@ euc_dist[1:3, 1:3] %>% kable()
 
 ## 6. Apply a multi-dimensional scaling approach to the distance matrix and render a 2D scatterplot. Compare the two distance metrics.
 
-A multi-dimensional scaling approach can transform a high-dimentional matrix into low-dimentional space. To approach this task, we applied the classical multi-dimensional scaling (by `cmdscale()`) on the two matrices obtained in task 5.
+A multi-dimensional scaling approach transforms a high-dimentional matrix into a low-dimentional one. To approach this task, we applied the classical multi-dimensional scaling (by `cmdscale()`) on the two matrices obtained in task 5.
 
 ```{r}
 cos_dist_fit <- cmdscale(cos_dist, k = 2)
@@ -197,9 +197,11 @@ grid.arrange(scaled_cos_dist, scaled_euc_dist, ncol = 2)
 ```
 ## 7. Capture the year of release during parsing and color code the scatterplot by time. Produce a Word Cloud for each year.
 
+To create a word cloud for each year, we constructed a function `create_wordcloud()`. Take 2013 to 2015 for example, one can see that the most common terms in the clouds are 'univers', 'jacob' and 'Bremen', which are already pointed out in task 3.
 
 ```{r}
 create_wordcloud <- function(year) {
+    
     d <- t %>% 
         filter(year == year) %>% 
         group_by(stemmed_word) %>% 
@@ -213,7 +215,7 @@ create_wordcloud <- function(year) {
 ```
 
 ```{r, warning=FALSE, fig.height=2, fig.width=2}
-for (i in seq(2015, 2013, -1)) {
+for (i in seq(2013, 2015)) {
     create_wordcloud(i)
 }
 ```
