@@ -71,12 +71,13 @@ colnames(text_df)
 ```
 
 ```{r}
-text_df[1:5, 2]
+text_df[1:5, 'text']
 ```
 
 ## 2. Remove stop words and perform stemming.
 
-Stop words can be discarded by `tokenizers::stopwords()`. Stemming can be carried out by `SnowballC::wordStem()`. The results are shown below.
+Stop words are words used for grammer, but with little meaning. Common stop words are articles, such as 'the' and 'a', and prepositions, such as 'in', 'at', etc. Stemming refers to the process in which a word is reduced to its word stem. For example, 'goes', 'went', and 'gone' are reduced to 'go'. By doing so, a word with various forms will not be considered different words.
+In R, stop words can be discarded by `tokenizers::stopwords()`. Stemming can be carried out by `SnowballC::wordStem()`. The results are shown below.
 
 ```{r}
 t <- text_df %>%
@@ -91,7 +92,7 @@ head(t) %>% kable()
 
 ## 3. Perform a frequency analysis to compute the term-document (TD) matrix. What are the most common terms?
 
-The frequency analysis can be performed by `dplyr::count()`, and its results indicates that the most frequent three words are 'univers', 'jacob', and 'bremen'. 
+The frequency analysis can be performed by grouping each word (`dplyr::group_by()`) and by counting its occurrences (`dplyr::count()`). The following plots indicates that the most frequent three words are 'univers', 'jacob', and 'bremen'. 
 
 ```{r}
 top_5_words <- t %>% 
@@ -129,6 +130,11 @@ td[1:10, top_5_words$stemmed_word] %>% kable(row.names = TRUE)
 
 ## 4. Compute inverse-document frequency (IDF) and term importance (TI). What are now the most common terms?
 
+In text mining, the term importance (or term frequency-inverse document frequency, hereafter TF-IDF) measures a word's saliency. Firstly, the term frequency (hereafter TF) measures a term's occurrence in a document. The definition is:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$TFij = \frac{Nij}{Ni}$, where $Nij$ is the number of occurrences of word j in document i, and $Ni$ is the number of words in document i.  
+Also, inverse document frequency (hereafter IDF) measures whether a word is common across all documents. It is defined as:  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$IDFj = ln(\frac{N}{Nj})$, where $N$ is the number of all documents, and $Nj$ is the number of word j's occurrences in all documents.   
+TF-IDF is the product of term frequency and inverse document frequency. Of great importance to note is that, a common word across the document will obtained a lower IDF, thus gaining a lower term importance. Therefore, the rationale for calculating TF-IDF is that if a word is rare in the corpus, it implies a greater importance in a document.
 Inverse-document frequency and term importance in each press release can be acquired by `tidytext::bind_tf_idf()`. The following table shows that 'univers' gained low importance, which resulted from its ubiquitousness in the whole corpus.
 
 ```{r}
