@@ -130,9 +130,9 @@ td[1:10, top_5_words$stemmed_word] %>% kable(row.names = TRUE)
 
 ## 4. Compute inverse-document frequency (IDF) and term importance (TI). What are now the most common terms?
 
-In text mining, the term importance (or term frequency-inverse document frequency, hereafter TF-IDF) measures a word's saliency. Firstly, the term frequency (hereafter TF) measures a term's occurrence in a document. The definition is:  
+In text mining, the term importance (or term frequency-inverse document frequency, TF-IDF hereafter) measures a word's saliency. Firstly, the term frequency (TF hereafter) measures a term's occurrence in a document. The definition is:  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$TFij = \frac{Nij}{Ni}$, where $Nij$ is the number of occurrences of word j in document i, and $Ni$ is the number of words in document i.  
-Also, inverse document frequency (hereafter IDF) measures whether a word is common across all documents. It is defined as:  
+Also, inverse document frequency (IDF hereafter) measures whether a word is common across all documents. It is defined as:  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$IDFj = ln(\frac{N}{Nj})$, where $N$ is the number of all documents, and $Nj$ is the number of word j's occurrences in all documents.   
 TF-IDF is the product of term frequency and inverse document frequency. Of great importance to note is that, a common word across the document will obtained a lower IDF, thus gaining a lower term importance. Therefore, the rationale for calculating TF-IDF is that if a word is rare in the corpus, it implies a greater importance in a document.
 Inverse-document frequency and term importance in each press release can be acquired by `tidytext::bind_tf_idf()`. The following table shows that 'univers' gained low importance, which resulted from its ubiquitousness in the whole corpus.
@@ -162,7 +162,7 @@ tf_idf %>%
 
 ## 5. Compute pairwise cosine and Euclidean distance between all documents.
 
-Applying `text2vec::dist2` on the term-document matrix can assist us in obtaining pairwise similarities (measured by cosine or euclidean distance) of two documents.
+Applying `text2vec::dist2` on the term-document matrix can assist us in obtaining pairwise similarities (measured by cosine or euclidean distance) of documents.
 
 ```{r}
 cos_dist <- dist2(td, method = 'cosine')
